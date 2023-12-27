@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HFTDEX Interface</title>
+    <!-- Include ethers.js or web3.js CDN for blockchain interaction -->
+</head>
+<body>
+    <h1>HFTDEX Trading Platform</h1>
+
+    <!-- Interaction with OrderBook -->
+    <div>
+        <h2>Place Order</h2>
+        <input type="text" id="tokenA" placeholder="Address of Token A">
+        <input type="text" id="tokenB" placeholder="Address of Token B">
+        <input type="text" id="amount" placeholder="Amount">
+        <input type="text" id="price" placeholder="Price">
+        <button id="placeOrderBtn">Place Order</button>
+    </div>
+
+    <!-- Interaction with MarginAccount -->
+    <div>
+        <h2>Margin Account</h2>
+        <button id="depositMarginBtn">Deposit Margin</button>
+        <button id="withdrawMarginBtn">Withdraw Margin</button>
+    </div>
+
+    <!-- Interaction with LendingPool -->
+    <div>
+        <h2>Lending Pool</h2>
+        <button id="lendBtn">Lend Assets</button>
+        <button id="borrowBtn">Borrow Assets</button>
+    </div>
+
+    <script type="module">
+        // Importing ethers from a CDN or your package manager
+        import { ethers } from './ethers-5.2.esm.min.js';
+    
+        // ENVIRONMENT_VARIABLES to be replaced with actual values
+        const orderBookAddress = "ORDERBOOK_CONTRACT_ADDRESS";
+        const orderBookABI = ["ABI_ARRAY"];
+    
+        // Connect to the Ethereum network
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+    
+        // Connect to the smart contract
+        const orderBookContract = new ethers.Contract(orderBookAddress, orderBookABI, provider);
+    
+        // Prompt user to connect their wallet
+        async function connectWallet() {
+            await provider.send("eth_requestAccounts", []);
+            const signer = provider.getSigner();
+            return signer;
+        }
+    
+        // Place an order
+        async function placeOrder(tokenA, tokenB, amount, price) {
+            const signer = await connectWallet();
+            const orderBookWithSigner = orderBookContract.connect(signer);
+            
+            // Assuming the contract has a function `placeOrder`
+            const tx = await orderBookWithSigner.placeOrder(tokenA, tokenB, amount, price);
+            await tx.wait();
+            alert('Order placed successfully!');
+        }
+    
+        document.getElementById('placeOrderBtn').addEventListener('click', async () => {
+            const tokenA = document.getElementById('tokenA').value;
+            const tokenB = document.getElementById('tokenB').value;
+            const amount = document.getElementById('amount').value;
+            const price = document.getElementById('price').value;
+            await placeOrder(tokenA, tokenB, amount, price);
+        });
+
+        // More interactions as needed
+    </script>
+</body>
+</html>
