@@ -72,7 +72,72 @@
             await placeOrder(tokenA, tokenB, amount, price);
         });
 
-        // More interactions as needed
+        // Assuming we have contract addresses and ABIs set up in environment variables
+    const marginAccountAddress = "MARGIN_ACCOUNT_CONTRACT_ADDRESS";
+    const marginAccountABI = ["MARGIN_ACCOUNT_ABI_ARRAY"];
+    const lendingPoolAddress = "LENDING_POOL_CONTRACT_ADDRESS";
+    const lendingPoolABI = ["LENDING_POOL_ABI_ARRAY"];
+
+    // Connect to the MarginAccount and LendingPool contracts
+    const marginAccountContract = new ethers.Contract(marginAccountAddress, marginAccountABI, provider);
+    const lendingPoolContract = new ethers.Contract(lendingPoolAddress, lendingPoolABI, provider);
+
+    // Deposit function
+    async function deposit(amount) {
+        const signer = await connectWallet();
+        const marginAccountWithSigner = marginAccountContract.connect(signer);
+        const tx = await marginAccountWithSigner.deposit({ value: amount });
+        await tx.wait();
+        alert('Deposit successful!');
+    }
+
+    // Withdraw function
+    async function withdraw(amount) {
+        const signer = await connectWallet();
+        const marginAccountWithSigner = marginAccountContract.connect(signer);
+        const tx = await marginAccountWithSigner.withdraw(amount);
+        await tx.wait();
+        alert('Withdraw successful!');
+    }
+
+    // Lend function
+    async function lend(amount) {
+        const signer = await connectWallet();
+        const lendingPoolWithSigner = lendingPoolContract.connect(signer);
+        const tx = await lendingPoolWithSigner.lend({ value: amount });
+        await tx.wait();
+        alert('Lending successful!');
+    }
+
+    // Borrow function
+    async function borrow(amount) {
+        const signer = await connectWallet();
+        const lendingPoolWithSigner = lendingPoolContract.connect(signer);
+        const tx = await lendingPoolWithSigner.borrow(amount);
+        await tx.wait();
+        alert('Borrow successful!');
+    }
+
+    // Event listeners for the buttons
+    document.getElementById('depositBtn').addEventListener('click', async () => {
+        const amount = ethers.utils.parseEther(document.getElementById('depositAmount').value);
+        await deposit(amount);
+    });
+
+    document.getElementById('withdrawBtn').addEventListener('click', async () => {
+        const amount = ethers.utils.parseEther(document.getElementById('withdrawAmount').value);
+        await withdraw(amount);
+    });
+
+    document.getElementById('lendBtn').addEventListener('click', async () => {
+        const amount = ethers.utils.parseEther(document.getElementById('lendAmount').value);
+        await lend(amount);
+    });
+
+    document.getElementById('borrowBtn').addEventListener('click', async () => {
+        const amount = ethers.utils.parseEther(document.getElementById('borrowAmount').value);
+        await borrow(amount);
+    });
     </script>
 </body>
 </html>
